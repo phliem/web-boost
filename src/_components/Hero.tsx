@@ -1,14 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export function Hero() {
   const [websiteUrl, setWebsiteUrl] = useState('');
+  const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement website analysis
-    console.log('Analyzing website:', websiteUrl);
+    // Encode the URL to handle special characters
+    const encodedUrl = encodeURIComponent(websiteUrl);
+    router.push(`/reviews?url=${encodedUrl}`);
   };
 
   return (
