@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-export default function Hero() {
+export function Hero() {
   const [websiteUrl, setWebsiteUrl] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -41,4 +41,5 @@ export default function Hero() {
       </div>
     </section>
   );
-} 
+}
+ 

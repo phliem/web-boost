@@ -1,4 +1,4 @@
-export default function Header() {
+export function Header() {
   return (
     <header className="fixed w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -12,4 +12,5 @@ export default function Header() {
       </nav>
     </header>
   );
-} 
+}
+ 
