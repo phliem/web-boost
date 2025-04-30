@@ -10,6 +10,11 @@ interface SEOData {
   description: string;
   keywords: string[];
   ogImage?: string;
+  tools: {
+    name: string;
+    category: string;
+    confidence: 'high' | 'medium' | 'low';
+  }[];
   loading: boolean;
   error?: string;
 }
@@ -21,6 +26,7 @@ export default function ReviewsPage() {
     title: '',
     description: '',
     keywords: [],
+    tools: [],
     loading: true
   });
 
@@ -110,6 +116,38 @@ export default function ReviewsPage() {
                   </span>
                 ))}
               </div>
+            </div>
+
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Third-Party Tools</h2>
+              {seoData.tools.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {seoData.tools.map((tool, index) => (
+                    <div
+                      key={index}
+                      className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg"
+                    >
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-medium text-gray-900 dark:text-white">{tool.name}</h3>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{tool.category}</span>
+                      </div>
+                      <div className="mt-2">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          tool.confidence === 'high' 
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                            : tool.confidence === 'medium'
+                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                        }`}>
+                          {tool.confidence} confidence
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-600 dark:text-gray-300">No third-party tools detected.</p>
+              )}
             </div>
 
             {seoData.ogImage && (
