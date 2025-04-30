@@ -1,4 +1,4 @@
-import { Hero, HowItWorks, Footer } from '@/_components'; 
+import { Hero, HowItWorks, Footer } from './_components'; 
 
 export default function Home() {
   return (
