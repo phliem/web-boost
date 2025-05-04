@@ -137,6 +137,19 @@ export async function POST(request: Request) {
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle0' });
 
+    // Get cookies
+    const cookies = await page.cookies();
+    const formattedCookies = cookies.map(cookie => ({
+      name: cookie.name,
+      value: cookie.value,
+      domain: cookie.domain,
+      path: cookie.path,
+      expires: cookie.expires ? new Date(cookie.expires * 1000).toISOString() : 'Session',
+      secure: cookie.secure,
+      httpOnly: cookie.httpOnly,
+      sameSite: cookie.sameSite
+    }));
+
     // Get page content
     const content = await page.content();
     const title = await page.title();
@@ -202,6 +215,7 @@ export async function POST(request: Request) {
       links,
       images,
       detectedTools,
+      cookies: formattedCookies,
     });
   } catch (error) {
     console.error('Error analyzing website:', error);
