@@ -7,14 +7,32 @@ import Image from 'next/image';
 
 interface SEOData {
   title: string;
-  description: string;
-  keywords: string[];
-  ogImage?: string;
-  tools: {
-    name: string;
-    category: string;
-    confidence: 'high' | 'medium' | 'low';
-  }[];
+  metaDescription: string | null;
+  metaTags: Array<{
+    name: string | null;
+    content: string | null;
+  }>;
+  links: Array<{
+    href: string;
+    text: string | null;
+    rel: string;
+  }>;
+  images: Array<{
+    src: string;
+    alt: string;
+  }>;
+  detectedTools: {
+    analytics: string[];
+    optimization: string[];
+    monitoring: string[];
+    marketing: string[];
+    chat: string[];
+    cms: string[];
+    frameworks: string[];
+    cdns: string[];
+    payments: string[];
+    security: string[];
+  };
   loading: boolean;
   error?: string;
 }
@@ -24,9 +42,22 @@ export default function ReviewsPage() {
   const url = searchParams.get('url');
   const [seoData, setSeoData] = useState<SEOData>({
     title: '',
-    description: '',
-    keywords: [],
-    tools: [],
+    metaDescription: null,
+    metaTags: [],
+    links: [],
+    images: [],
+    detectedTools: {
+      analytics: [],
+      optimization: [],
+      monitoring: [],
+      marketing: [],
+      chat: [],
+      cms: [],
+      frameworks: [],
+      cdns: [],
+      payments: [],
+      security: [],
+    },
     loading: true
   });
 
@@ -38,7 +69,13 @@ export default function ReviewsPage() {
       }
 
       try {
-        const response = await fetch(`/api/seo?url=${encodeURIComponent(url)}`);
+        const response = await fetch('/api/seo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url }),
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch SEO data');
         }
@@ -93,76 +130,112 @@ export default function ReviewsPage() {
             SEO Analysis for {url}
           </h1>
 
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Title</h2>
-              <p className="text-gray-600 dark:text-gray-300">{seoData.title}</p>
+          <div className="space-y-8">
+            {/* Basic SEO Info */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Basic SEO Information</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Title</h3>
+                  <p className="text-gray-600 dark:text-gray-300">{seoData.title}</p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Meta Description</h3>
+                  <p className="text-gray-600 dark:text-gray-300">{seoData.metaDescription || 'Not found'}</p>
+                </div>
+              </div>
             </div>
 
+            {/* Meta Tags */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Description</h2>
-              <p className="text-gray-600 dark:text-gray-300">{seoData.description}</p>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Meta Tags</h2>
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {seoData.metaTags.map((tag, index) => (
+                    <div key={index} className="bg-white dark:bg-gray-800 p-3 rounded-lg">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{tag.name}</p>
+                      <p className="text-gray-900 dark:text-white">{tag.content}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
+            {/* Detected Tools */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Keywords</h2>
-              <div className="flex flex-wrap gap-2">
-                {seoData.keywords.map((keyword, index) => (
-                  <span
-                    key={index}
-                    className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm"
-                  >
-                    {keyword}
-                  </span>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Detected Tools</h2>
+              <div className="space-y-6">
+                {Object.entries(seoData.detectedTools).map(([category, tools]) => (
+                  tools.length > 0 && (
+                    <div key={category} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 capitalize">
+                        {category.replace(/([A-Z])/g, ' $1').trim()}
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {tools.map((tool, index) => (
+                          <span
+                            key={index}
+                            className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm"
+                          >
+                            {tool}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )
                 ))}
               </div>
             </div>
 
+            {/* Links */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Third-Party Tools</h2>
-              {seoData.tools.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {seoData.tools.map((tool, index) => (
-                    <div
-                      key={index}
-                      className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg"
-                    >
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-medium text-gray-900 dark:text-white">{tool.name}</h3>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">{tool.category}</span>
-                      </div>
-                      <div className="mt-2">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          tool.confidence === 'high' 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                            : tool.confidence === 'medium'
-                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                        }`}>
-                          {tool.confidence} confidence
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Links</h2>
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 max-h-96 overflow-y-auto">
+                <div className="space-y-2">
+                  {seoData.links.map((link, index) => (
+                    <div key={index} className="bg-white dark:bg-gray-800 p-3 rounded-lg">
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        {link.text || link.href}
+                      </a>
+                      {link.rel && (
+                        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                          ({link.rel})
                         </span>
-                      </div>
+                      )}
                     </div>
                   ))}
                 </div>
-              ) : (
-                <p className="text-gray-600 dark:text-gray-300">No third-party tools detected.</p>
-              )}
+              </div>
             </div>
 
-            {seoData.ogImage && (
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Open Graph Image</h2>
-                <div className="relative w-full aspect-video">
-                  <Image
-                    src={seoData.ogImage}
-                    alt="Open Graph Image"
-                    fill
-                    className="object-cover rounded-lg"
-                  />
+            {/* Images */}
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Images</h2>
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {seoData.images.map((image, index) => (
+                    <div key={index} className="bg-white dark:bg-gray-800 p-3 rounded-lg">
+                      <div className="relative aspect-video mb-2">
+                        <Image
+                          src={image.src}
+                          alt={image.alt || 'Image'}
+                          fill
+                          className="object-cover rounded-lg"
+                        />
+                      </div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                        {image.alt || 'No alt text'}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </div>
-            )}
+            </div>
           </div>
 
           <div className="mt-8">
