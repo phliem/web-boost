@@ -7,11 +7,11 @@ interface SEOData {
   }>;
 }
 
-interface SEOTabProps {
+interface TabSeoProps {
   seoData: SEOData;
 }
 
-export function SEOTab({ seoData }: SEOTabProps) {
+export function TabSeo({ seoData }: TabSeoProps) {
   return (
     <div className="space-y-8">
       {/* Basic SEO Info */}
@@ -45,4 +45,4 @@ export function SEOTab({ seoData }: SEOTabProps) {
       </div>
     </div>
   );
-} 
+}

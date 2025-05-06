@@ -3,13 +3,13 @@ interface Tab {
   label: string;
 }
 
-interface TabNavigationProps {
+interface NavigationTabsProps {
   tabs: Tab[];
   activeTab: string;
   onTabChange: (tabId: string) => void;
 }
 
-export function TabNavigation({ tabs, activeTab, onTabChange }: TabNavigationProps) {
+export function NavigationTabs({ tabs, activeTab, onTabChange }: NavigationTabsProps) {
   return (
     <div className="border-b border-gray-200 dark:border-gray-700 mb-8">
       <nav className="flex space-x-8" aria-label="Tabs">
@@ -31,4 +31,4 @@ export function TabNavigation({ tabs, activeTab, onTabChange }: TabNavigationPro
       </nav>
     </div>
   );
-} 
+}

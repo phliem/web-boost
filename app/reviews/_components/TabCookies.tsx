@@ -9,11 +9,11 @@ interface Cookie {
   sameSite: string;
 }
 
-interface CookiesTabProps {
+interface TabCookiesProps {
   cookies: Cookie[];
 }
 
-export function CookiesTab({ cookies }: CookiesTabProps) {
+export function TabCookies({ cookies }: TabCookiesProps) {
   return (
     <div>
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Cookies</h2>
@@ -62,4 +62,4 @@ export function CookiesTab({ cookies }: CookiesTabProps) {
       </div>
     </div>
   );
-} 
+}

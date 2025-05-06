@@ -5,11 +5,11 @@ interface Image {
   alt: string;
 }
 
-interface ImagesTabProps {
+interface TabImagesProps {
   images: Image[];
 }
 
-export function ImagesTab({ images }: ImagesTabProps) {
+export function TabImages({ images }: TabImagesProps) {
   return (
     <div>
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Images</h2>
@@ -34,4 +34,4 @@ export function ImagesTab({ images }: ImagesTabProps) {
       </div>
     </div>
   );
-} 
+}

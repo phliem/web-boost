@@ -4,11 +4,11 @@ interface Link {
   rel: string;
 }
 
-interface LinksTabProps {
+interface TabLinksProps {
   links: Link[];
 }
 
-export function LinksTab({ links }: LinksTabProps) {
+export function TabLinks({ links }: TabLinksProps) {
   return (
     <div>
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Links</h2>
@@ -35,4 +35,4 @@ export function LinksTab({ links }: LinksTabProps) {
       </div>
     </div>
   );
-} 
+}

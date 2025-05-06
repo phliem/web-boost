@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Footer } from '../_components';
-import { TabNavigation, SEOTab, ToolsTab, LinksTab, ImagesTab, CookiesTab } from './_components';
+import { NavigationTabs, TabSeo, TabTools, TabLinks, TabImages, TabCookies } from './_components';
 
 interface SEOData {
   title: string;
@@ -151,18 +151,18 @@ export default function ReviewsPage() {
             SEO Analysis for {url}
           </h1>
 
-          <TabNavigation
+          <NavigationTabs
             tabs={tabs}
             activeTab={activeTab}
             onTabChange={setActiveTab}
           />
 
           <div className="space-y-8">
-            {activeTab === 'seo' && <SEOTab seoData={seoData} />}
-            {activeTab === 'tools' && <ToolsTab detectedTools={seoData.detectedTools} />}
-            {activeTab === 'links' && <LinksTab links={seoData.links} />}
-            {activeTab === 'images' && <ImagesTab images={seoData.images} />}
-            {activeTab === 'cookies' && <CookiesTab cookies={seoData.cookies} />}
+            {activeTab === 'cookies' && <TabCookies cookies={seoData.cookies} />}
+            {activeTab === 'images' && <TabImages images={seoData.images} />}
+            {activeTab === 'links' && <TabLinks links={seoData.links} />}
+            {activeTab === 'seo' && <TabSeo seoData={seoData} />}
+            {activeTab === 'tools' && <TabTools detectedTools={seoData.detectedTools} />}
           </div>
 
           <div className="mt-8">
@@ -178,4 +178,4 @@ export default function ReviewsPage() {
       <Footer />
     </div>
   );
-} 
+}

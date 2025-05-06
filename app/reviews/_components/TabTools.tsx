@@ -11,11 +11,11 @@ interface DetectedTools {
   security: string[];
 }
 
-interface ToolsTabProps {
+interface TabToolsProps {
   detectedTools: DetectedTools;
 }
 
-export function ToolsTab({ detectedTools }: ToolsTabProps) {
+export function TabTools({ detectedTools }: TabToolsProps) {
   return (
     <div>
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Detected Tools</h2>
@@ -42,4 +42,4 @@ export function ToolsTab({ detectedTools }: ToolsTabProps) {
       </div>
     </div>
   );
-} 
+}
