@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
+import { Footer } from '../_components';
+import { TabNavigation, SEOTab, ToolsTab, LinksTab, ImagesTab, CookiesTab } from './_components';
 
 interface SEOData {
   title: string;
@@ -50,6 +51,7 @@ interface SEOData {
 export default function ReviewsPage() {
   const searchParams = useSearchParams();
   const url = searchParams.get('url');
+  const [activeTab, setActiveTab] = useState('seo');
   const [seoData, setSeoData] = useState<SEOData>({
     title: '',
     metaDescription: null,
@@ -104,6 +106,14 @@ export default function ReviewsPage() {
     fetchSEOData();
   }, [url]);
 
+  const tabs = [
+    { id: 'seo', label: 'SEO' },
+    { id: 'tools', label: 'Detected Tools' },
+    { id: 'links', label: 'Links' },
+    { id: 'images', label: 'Images' },
+    { id: 'cookies', label: 'Cookies' },
+  ];
+
   if (seoData.loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -135,166 +145,24 @@ export default function ReviewsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
             SEO Analysis for {url}
           </h1>
 
+          <TabNavigation
+            tabs={tabs}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
+
           <div className="space-y-8">
-            {/* Basic SEO Info */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Basic SEO Information</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Title</h3>
-                  <p className="text-gray-600 dark:text-gray-300">{seoData.title}</p>
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Meta Description</h3>
-                  <p className="text-gray-600 dark:text-gray-300">{seoData.metaDescription || 'Not found'}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Meta Tags */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Meta Tags</h2>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {seoData.metaTags.map((tag, index) => (
-                    <div key={index} className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{tag.name}</p>
-                      <p className="text-gray-900 dark:text-white">{tag.content}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Detected Tools */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Detected Tools</h2>
-              <div className="space-y-6">
-                {Object.entries(seoData.detectedTools).map(([category, tools]) => (
-                  tools.length > 0 && (
-                    <div key={category} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                      <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 capitalize">
-                        {category.replace(/([A-Z])/g, ' $1').trim()}
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {tools.map((tool, index) => (
-                          <span
-                            key={index}
-                            className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm"
-                          >
-                            {tool}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                ))}
-              </div>
-            </div>
-
-            {/* Links */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Links</h2>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 max-h-96 overflow-y-auto">
-                <div className="space-y-2">
-                  {seoData.links.map((link, index) => (
-                    <div key={index} className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                      <a
-                        href={link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 dark:text-blue-400 hover:underline"
-                      >
-                        {link.text || link.href}
-                      </a>
-                      {link.rel && (
-                        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                          ({link.rel})
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Images */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Images</h2>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {seoData.images.map((image, index) => (
-                    <div key={index} className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                      <div className="relative aspect-video mb-2">
-                        <Image
-                          src={image.src}
-                          alt={image.alt || 'Image'}
-                          fill
-                          className="object-cover rounded-lg"
-                        />
-                      </div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                        {image.alt || 'No alt text'}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Cookies */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Cookies</h2>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
-                    <thead className="bg-gray-100 dark:bg-gray-800">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Domain</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Expires</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Secure</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">HttpOnly</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">SameSite</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
-                      {seoData.cookies.map((cookie, index) => (
-                        <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                            <div className="font-medium">{cookie.name}</div>
-                            <div className="text-gray-500 dark:text-gray-400 text-xs truncate max-w-xs">
-                              {cookie.value}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {cookie.domain}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {cookie.expires}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {cookie.secure ? 'Yes' : 'No'}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {cookie.httpOnly ? 'Yes' : 'No'}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {cookie.sameSite || 'None'}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+            {activeTab === 'seo' && <SEOTab seoData={seoData} />}
+            {activeTab === 'tools' && <ToolsTab detectedTools={seoData.detectedTools} />}
+            {activeTab === 'links' && <LinksTab links={seoData.links} />}
+            {activeTab === 'images' && <ImagesTab images={seoData.images} />}
+            {activeTab === 'cookies' && <CookiesTab cookies={seoData.cookies} />}
           </div>
 
           <div className="mt-8">
@@ -307,6 +175,7 @@ export default function ReviewsPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 } 

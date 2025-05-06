@@ -1,7 +1,7 @@
 export function Footer() {
   return (
     <footer className="bg-white dark:bg-gray-900 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Web Boost</h3>
