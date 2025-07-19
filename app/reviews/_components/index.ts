@@ -1,5 +1,6 @@
 export { NavigationTabs } from './NavigationTabs';
 export { TabColors } from './TabColors';
+export { TabCompare } from './TabCompare';
 export { TabCookies } from './TabCookies'; 
 export { TabImages } from './TabImages';
 export { TabLinks } from './TabLinks';

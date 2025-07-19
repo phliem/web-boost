@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Footer } from '../_components';
-import { NavigationTabs, TabSeo, TabTools, TabLinks, TabImages, TabCookies, TabScreenshot, TabColors } from './_components';
+import { NavigationTabs, TabSeo, TabTools, TabLinks, TabImages, TabCookies, TabScreenshot, TabColors, TabCompare } from './_components';
 
 interface SEOData {
   title: string;
@@ -51,6 +51,27 @@ interface SEOData {
   error?: string;
 }
 
+interface ComparisonData {
+  url: string;
+  totalTime: number;
+  comparison: {
+    puppeteer: {
+      success: boolean;
+      data: any;
+      features: string[];
+    };
+    playwright: {
+      success: boolean;
+      data: any;
+      features: string[];
+    };
+  };
+  recommendations: {
+    usePlaywright: string[];
+    usePuppeteer: string[];
+  };
+}
+
 function ReviewsContent() {
   const searchParams = useSearchParams();
   const url = searchParams.get('url');
@@ -78,6 +99,10 @@ function ReviewsContent() {
     fonts: [],
     loading: true
   });
+
+  const [comparisonData, setComparisonData] = useState<ComparisonData | null>(null);
+  const [comparisonLoading, setComparisonLoading] = useState(false);
+  const [comparisonError, setComparisonError] = useState<string>();
 
   useEffect(() => {
     const fetchSEOData = async () => {
@@ -111,6 +136,34 @@ function ReviewsContent() {
     fetchSEOData();
   }, [url]);
 
+  const runComparison = async () => {
+    if (!url) return;
+
+    setComparisonLoading(true);
+    setComparisonError(undefined);
+
+    try {
+      const response = await fetch('/api/compare', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to run comparison');
+      }
+
+      const data = await response.json();
+      setComparisonData(data);
+    } catch (error) {
+      setComparisonError(error instanceof Error ? error.message : 'An error occurred during comparison');
+    } finally {
+      setComparisonLoading(false);
+    }
+  };
+
   const tabs = [
     { id: 'seo', label: 'SEO' },
     { id: 'screenshot', label: 'Screenshot' },
@@ -119,6 +172,7 @@ function ReviewsContent() {
     { id: 'links', label: 'Links' },
     { id: 'images', label: 'Images' },
     { id: 'cookies', label: 'Cookies' },
+    { id: 'compare', label: 'Compare Engines' },
   ];
 
   if (seoData.loading) {
@@ -172,6 +226,14 @@ function ReviewsContent() {
             {activeTab === 'screenshot' && seoData.screenshot && <TabScreenshot screenshot={seoData.screenshot} />}
             {activeTab === 'seo' && <TabSeo seoData={seoData} />}
             {activeTab === 'tools' && <TabTools detectedTools={seoData.detectedTools} />}
+            {activeTab === 'compare' && (
+              <TabCompare 
+                comparisonData={comparisonData}
+                loading={comparisonLoading}
+                error={comparisonError}
+                onRunComparison={runComparison}
+              />
+            )}
           </div>
 
           <div className="mt-8">
