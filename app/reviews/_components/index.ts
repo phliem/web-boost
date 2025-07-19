@@ -1,4 +1,5 @@
 export { NavigationTabs } from './NavigationTabs';
+export { TabColors } from './TabColors';
 export { TabCookies } from './TabCookies'; 
 export { TabImages } from './TabImages';
 export { TabLinks } from './TabLinks';

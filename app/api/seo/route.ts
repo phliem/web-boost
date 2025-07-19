@@ -75,6 +75,94 @@ export async function POST(request: Request) {
       type: 'png'
     });
 
+    // Extract CSS colors
+    const colors = await page.evaluate(() => {
+      const colorSet = new Set<string>();
+      const colorRegex = /#[0-9a-fA-F]{3,6}|rgb\([^)]+\)|rgba\([^)]+\)|hsl\([^)]+\)|hsla\([^)]+\)/g;
+      
+      // Get all stylesheets
+      const stylesheets = Array.from(document.styleSheets);
+      
+      for (const stylesheet of stylesheets) {
+        try {
+          const rules = Array.from(stylesheet.cssRules || []);
+          for (const rule of rules) {
+            if (rule instanceof CSSStyleRule) {
+              const cssText = rule.cssText;
+              const matches = cssText.match(colorRegex);
+              if (matches) {
+                matches.forEach(color => colorSet.add(color.toLowerCase()));
+              }
+            }
+          }
+        } catch {
+          // Skip cross-origin stylesheets
+        }
+      }
+      
+      // Also check inline styles
+      const elements = document.querySelectorAll('[style]');
+      elements.forEach(el => {
+        const style = (el as HTMLElement).style.cssText;
+        const matches = style.match(colorRegex);
+        if (matches) {
+          matches.forEach(color => colorSet.add(color.toLowerCase()));
+        }
+      });
+      
+      return Array.from(colorSet).sort();
+    });
+
+    // Extract fonts
+    const fonts = await page.evaluate(() => {
+      const fontSet = new Set<string>();
+      
+      // Get all stylesheets
+      const stylesheets = Array.from(document.styleSheets);
+      
+      for (const stylesheet of stylesheets) {
+        try {
+          const rules = Array.from(stylesheet.cssRules || []);
+          for (const rule of rules) {
+            if (rule instanceof CSSStyleRule) {
+              const style = rule.style;
+              const fontFamily = style.fontFamily;
+              if (fontFamily) {
+                // Clean up font names by removing quotes and splitting by comma
+                fontFamily.split(',').forEach(font => {
+                  const cleanFont = font.trim().replace(/['"]/g, '');
+                  if (cleanFont && !cleanFont.includes('serif') && !cleanFont.includes('sans-serif') && !cleanFont.includes('monospace') && !cleanFont.includes('cursive') && !cleanFont.includes('fantasy')) {
+                    fontSet.add(cleanFont);
+                  }
+                });
+              }
+            }
+          }
+        } catch {
+          // Skip cross-origin stylesheets
+        }
+      }
+      
+      // Also check computed styles of visible elements
+      const elements = document.querySelectorAll('*');
+      const elementsToCheck = Array.from(elements).slice(0, 50); // Limit to first 50 elements for performance
+      
+      elementsToCheck.forEach(el => {
+        const computedStyle = window.getComputedStyle(el);
+        const fontFamily = computedStyle.fontFamily;
+        if (fontFamily) {
+          fontFamily.split(',').forEach(font => {
+            const cleanFont = font.trim().replace(/['"]/g, '');
+            if (cleanFont && !cleanFont.includes('serif') && !cleanFont.includes('sans-serif') && !cleanFont.includes('monospace') && !cleanFont.includes('cursive') && !cleanFont.includes('fantasy')) {
+              fontSet.add(cleanFont);
+            }
+          });
+        }
+      });
+      
+      return Array.from(fontSet).sort();
+    });
+
     // Detect tools
     const detectedTools: Record<string, string[]> = {
       analytics: [],
@@ -109,6 +197,8 @@ export async function POST(request: Request) {
       detectedTools,
       cookies: formattedCookies,
       screenshot: `data:image/png;base64,${screenshot}`,
+      colors,
+      fonts,
     });
   } catch (error) {
     console.error('Error analyzing website:', error);

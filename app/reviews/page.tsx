@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Footer } from '../_components';
-import { NavigationTabs, TabSeo, TabTools, TabLinks, TabImages, TabCookies, TabScreenshot } from './_components';
+import { NavigationTabs, TabSeo, TabTools, TabLinks, TabImages, TabCookies, TabScreenshot, TabColors } from './_components';
 
 interface SEOData {
   title: string;
@@ -45,6 +45,8 @@ interface SEOData {
     sameSite: string;
   }>;
   screenshot?: string;
+  colors: string[];
+  fonts: string[];
   loading: boolean;
   error?: string;
 }
@@ -72,6 +74,8 @@ export default function ReviewsPage() {
       security: [],
     },
     cookies: [],
+    colors: [],
+    fonts: [],
     loading: true
   });
 
@@ -111,6 +115,7 @@ export default function ReviewsPage() {
     { id: 'seo', label: 'SEO' },
     { id: 'screenshot', label: 'Screenshot' },
     { id: 'tools', label: 'Detected Tools' },
+    { id: 'colors', label: 'Colors' },
     { id: 'links', label: 'Links' },
     { id: 'images', label: 'Images' },
     { id: 'cookies', label: 'Cookies' },
@@ -160,6 +165,7 @@ export default function ReviewsPage() {
           />
 
           <div className="space-y-8">
+            {activeTab === 'colors' && <TabColors colors={seoData.colors} fonts={seoData.fonts} />}
             {activeTab === 'cookies' && <TabCookies cookies={seoData.cookies} />}
             {activeTab === 'images' && <TabImages images={seoData.images} />}
             {activeTab === 'links' && <TabLinks links={seoData.links} />}
