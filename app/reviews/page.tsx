@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Footer } from '../_components';
-import { NavigationTabs, TabSeo, TabTools, TabLinks, TabImages, TabCookies } from './_components';
+import { NavigationTabs, TabSeo, TabTools, TabLinks, TabImages, TabCookies, TabScreenshot } from './_components';
 
 interface SEOData {
   title: string;
@@ -44,6 +44,7 @@ interface SEOData {
     httpOnly: boolean;
     sameSite: string;
   }>;
+  screenshot?: string;
   loading: boolean;
   error?: string;
 }
@@ -108,6 +109,7 @@ export default function ReviewsPage() {
 
   const tabs = [
     { id: 'seo', label: 'SEO' },
+    { id: 'screenshot', label: 'Screenshot' },
     { id: 'tools', label: 'Detected Tools' },
     { id: 'links', label: 'Links' },
     { id: 'images', label: 'Images' },
@@ -161,6 +163,7 @@ export default function ReviewsPage() {
             {activeTab === 'cookies' && <TabCookies cookies={seoData.cookies} />}
             {activeTab === 'images' && <TabImages images={seoData.images} />}
             {activeTab === 'links' && <TabLinks links={seoData.links} />}
+            {activeTab === 'screenshot' && seoData.screenshot && <TabScreenshot screenshot={seoData.screenshot} />}
             {activeTab === 'seo' && <TabSeo seoData={seoData} />}
             {activeTab === 'tools' && <TabTools detectedTools={seoData.detectedTools} />}
           </div>

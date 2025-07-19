@@ -20,7 +20,7 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Contact</h3>
             <p className="text-gray-600 dark:text-gray-300">
-              Email: contact@webbost.com
+              Email: contact@webboost.com
             </p>
           </div>
         </div>

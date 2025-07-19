@@ -68,6 +68,13 @@ export async function POST(request: Request) {
       }))
     );
 
+    // Take screenshot
+    const screenshot = await page.screenshot({
+      encoding: 'base64',
+      fullPage: true,
+      type: 'png'
+    });
+
     // Detect tools
     const detectedTools: Record<string, string[]> = {
       analytics: [],
@@ -101,6 +108,7 @@ export async function POST(request: Request) {
       images,
       detectedTools,
       cookies: formattedCookies,
+      screenshot: `data:image/png;base64,${screenshot}`,
     });
   } catch (error) {
     console.error('Error analyzing website:', error);
