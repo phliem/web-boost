@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Footer } from '../_components';
@@ -51,7 +51,7 @@ interface SEOData {
   error?: string;
 }
 
-export default function ReviewsPage() {
+function ReviewsContent() {
   const searchParams = useSearchParams();
   const url = searchParams.get('url');
   const [activeTab, setActiveTab] = useState('seo');
@@ -186,5 +186,20 @@ export default function ReviewsPage() {
       </div>
       <Footer />
     </div>
+  );
+}
+
+export default function ReviewsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">Loading...</p>
+        </div>
+      </div>
+    }>
+      <ReviewsContent />
+    </Suspense>
   );
 }
